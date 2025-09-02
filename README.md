@@ -1,230 +1,46 @@
-# Cookiecutter FastAPI AI Backend
+# Cookiecutter：FastAPI + LangChain + OpenAI（+ MCP）后端模板
 
-A [Cookiecutter](https://github.com/cookiecutter/cookiecutter) template for creating production-ready FastAPI backends tailored for AI applications with LangChain, OpenAI, and optional MCP (Model Context Protocol) integration.
+一个用于快速生成 AI 后端的 Cookiecutter 模板。基于 Python 3.12 的 FastAPI，内置：
+- LangChain 与 OpenAI 接入（支持自定义 OpenAI 兼容 Endpoint）
+- 流式输出（SSE）与可选 WebSocket 端点
+- 可选 LangGraph Agent 工作流示例
+- Docker、docker-compose + Nginx 反向代理（SSE + WebSocket）
+- VS Code Devcontainer
 
-## Features
-
-🚀 **FastAPI** - Modern, fast web framework with automatic API documentation  
-🧠 **LangChain** - Framework for developing applications with language models  
-🤖 **OpenAI Integration** - GPT models with streaming support  
-📡 **Server-Sent Events (SSE)** - Real-time streaming responses  
-🔌 **WebSocket Support** - Optional real-time bidirectional communication  
-🕸️ **LangGraph** - Optional stateful, multi-actor LLM applications  
-🛠️ **MCP Ready** - Placeholder structure for Model Context Protocol tools  
-🐳 **Docker Support** - Complete containerization with Nginx reverse proxy  
-🔧 **Dev Container** - Ready-to-use VS Code development environment  
-📦 **Flexible Dependencies** - Choose between Poetry or pip/setuptools  
-
-## Quick Start
-
-### Prerequisites
-
-- Python 3.8+
-- [Cookiecutter](https://github.com/cookiecutter/cookiecutter)
-
-### Install Cookiecutter
-
+快速使用
 ```bash
-pip install cookiecutter
-```
-
-### Generate Your Project
-
-```bash
+pipx install cookiecutter  # 或 pip install cookiecutter
 cookiecutter gh:Anyeler/cookiecutter-fastapi-ai-backend
 ```
 
-You'll be prompted for the following options:
+提供的开关
+- use_poetry：是否使用 Poetry 管理依赖
+- use_docker：是否包含 Dockerfile
+- enable_websocket：是否生成 /ws/chat WebSocket 端点
+- enable_langgraph：是否生成 LangGraph 示例与 /v1/agent 端点
 
-- **project_name** (default: "AI Backend Starter"): Display name for your project
-- **project_slug** (auto-generated): Directory/package name (lowercase, hyphenated)
-- **package_name** (default: "app"): Python package name
-- **description** (default: "FastAPI + LangChain + OpenAI (+ MCP placeholder) backend on Python 3.12"): Project description
-- **python_version** (default: "3.12"): Python version to use
-- **openai_model** (default: "gpt-4o-mini"): Default OpenAI model
-- **author_name**: Your name
-- **license**: Choose from MIT, Apache-2.0, or Proprietary
-- **use_poetry**: Use Poetry for dependency management (yes/no)
-- **use_docker**: Include Docker configuration (yes/no)
-- **enable_websocket**: Add WebSocket endpoint for real-time chat (yes/no)
-- **enable_langgraph**: Include LangGraph for agent workflows (yes/no)
+生成项目的主要能力
+- GET /healthz 健康检查
+- POST /v1/chat 使用 LangChain ChatOpenAI 完成对话
+- GET /v1/chat/stream 通过 OpenAI SDK 进行 SSE 流式输出
+- 可选：WS /ws/chat WebSocket 分片返回 tokens
+- 可选：POST /v1/agent 一个最小的 LangGraph 工作流
 
-### Example Generation
+关于自定义 OpenAI 兼容 Endpoint（国产/私有模型）
+- 在生成项目后，将 `.env.example` 复制为 `.env`
+- 配置以下变量：
+  - OPENAI_API_KEY=你的密钥
+  - OPENAI_BASE_URL=你的 OpenAI 兼容推理服务地址（默认 https://api.openai.com/v1）
+- 代码会自动读取以上环境变量，并在 LangChain 与 OpenAI SDK 中生效
 
-```bash
-$ cookiecutter gh:Anyeler/cookiecutter-fastapi-ai-backend
+通过 Docker + Nginx 访问的路径前缀
+- Nginx 将对外暴露带有前缀的 API：/api/
+  - 例如健康检查：GET http://127.0.0.1/api/healthz
+  - 同步对话：POST http://127.0.0.1/api/v1/chat
+  - 流式对话（SSE）：GET http://127.0.0.1/api/v1/chat/stream?prompt=hello
+  - WebSocket：ws://127.0.0.1/api/ws/chat
+- 反向代理中会将 /api/ 前缀回写到应用根路径，因此后端路由仍保持 /v1/... 与 /ws/... 结构
 
-project_name [AI Backend Starter]: My AI Assistant
-project_slug [my-ai-assistant]: 
-package_name [app]: 
-description [FastAPI + LangChain + OpenAI (+ MCP placeholder) backend on Python 3.12]: My custom AI assistant backend
-python_version [3.12]: 
-openai_model [gpt-4o-mini]: gpt-4
-author_name: John Doe
-license [MIT]: 
-use_poetry [yes]: 
-use_docker [yes]: 
-enable_websocket [yes]: 
-enable_langgraph [yes]:
-```
+欢迎提交 Issue/PR，提出更多开关或语言本地化需求。
 
-## Generated Project Structure
-
-```
-my-ai-assistant/
-├── .devcontainer/
-│   ├── devcontainer.json          # VS Code dev container config
-│   └── post-create.sh             # Setup script
-├── app/                           # Main application package
-│   ├── __init__.py
-│   ├── main.py                    # FastAPI app with all endpoints
-│   └── mcp/
-│       ├── __init__.py
-│       └── placeholder.py         # MCP integration guidelines
-├── deploy/
-│   └── nginx/
-│       └── nginx.conf             # Nginx reverse proxy config
-├── .dockerignore
-├── .env.example                   # Environment variables template
-├── .gitignore
-├── docker-compose.yml             # Multi-service Docker setup
-├── Dockerfile                     # Application container
-├── pyproject.toml                 # Python project configuration
-└── README.md                      # Project documentation
-```
-
-## What You Get
-
-### Core API Endpoints
-
-- `GET /healthz` - Health check endpoint
-- `POST /v1/chat` - Chat completion using LangChain
-- `GET /v1/chat/stream` - Streaming chat via Server-Sent Events
-
-### Optional Features
-
-**WebSocket Support** (if enabled):
-- `WS /ws/chat` - Real-time chat via WebSocket
-
-**LangGraph Agent** (if enabled):
-- `POST /v1/agent` - Agent workflow endpoint
-
-### Infrastructure
-
-- **Docker Compose** - App + Nginx reverse proxy setup
-- **Nginx Configuration** - Optimized for SSE and WebSocket
-- **Development Container** - Complete VS Code dev environment
-- **Environment Configuration** - Secure secret management
-
-### Development Tools
-
-- **Ruff** - Fast Python linter and formatter
-- **Python 3.12** - Latest stable Python
-- **Poetry or pip** - Flexible dependency management
-- **pytest** - Testing framework (dev dependency)
-
-## Getting Started After Generation
-
-1. **Navigate to your project:**
-   ```bash
-   cd my-ai-assistant
-   ```
-
-2. **Set up environment:**
-   ```bash
-   cp .env.example .env
-   # Edit .env and add your OPENAI_API_KEY
-   ```
-
-3. **Choose your development approach:**
-
-   **Option A: Local Development**
-   ```bash
-   # With Poetry (if selected)
-   poetry install
-   poetry run uvicorn app.main:app --reload
-   
-   # With pip (if Poetry not selected)
-   pip install -e ".[dev]"
-   uvicorn app.main:app --reload
-   ```
-
-   **Option B: Docker Compose**
-   ```bash
-   docker-compose up --build
-   ```
-
-   **Option C: Dev Container**
-   - Open in VS Code
-   - Command Palette → "Dev Containers: Reopen in Container"
-
-4. **Access your API:**
-   - API: http://localhost:8000
-   - Interactive docs: http://localhost:8000/docs
-   - Health check: http://localhost:8000/healthz
-
-## Configuration Options
-
-### Required Environment Variables
-
-- `OPENAI_API_KEY` - Your OpenAI API key
-
-### Optional Environment Variables
-
-- `OPENAI_MODEL` - Model to use (default from cookiecutter)
-- `DEBUG` - Enable debug mode (default: true)
-- `LOG_LEVEL` - Logging level (default: info)
-
-## MCP Integration
-
-The generated project includes comprehensive guidance for integrating Model Context Protocol (MCP) tools. Check the `app/mcp/placeholder.py` file for:
-
-- MCP client setup examples
-- Tool integration patterns
-- LangChain tool wrapping
-- Agent integration approaches
-
-## Customization
-
-The template uses Jinja2 templating to conditionally include features based on your selections:
-
-- **Poetry vs pip**: Different `pyproject.toml` configurations
-- **Docker**: Containerization setup
-- **WebSocket**: Real-time communication endpoints  
-- **LangGraph**: Agent workflow capabilities
-
-## Template Development
-
-To contribute to this template:
-
-1. Fork the repository
-2. Make your changes
-3. Test with different configuration combinations
-4. Submit a pull request
-
-### Testing the Template
-
-```bash
-# Test with different options
-cookiecutter . --no-input
-cookiecutter . --no-input use_poetry=no
-cookiecutter . --no-input enable_websocket=no enable_langgraph=no
-```
-
-## License
-
-This template is licensed under the MIT License. Generated projects will use the license you select during generation.
-
-## Support
-
-- 📖 **Documentation**: Check the generated project's README.md
-- 🐛 **Issues**: Open an issue on this repository
-- 💡 **Discussions**: Use GitHub Discussions for questions
-
-## Related Projects
-
-- [FastAPI](https://fastapi.tiangolo.com/) - The web framework
-- [LangChain](https://python.langchain.com/) - LLM application framework
-- [LangGraph](https://langchain-ai.github.io/langgraph/) - Agent workflow library
-- [Model Context Protocol](https://modelcontextprotocol.io/) - AI tool integration standard
-- [Cookiecutter](https://github.com/cookiecutter/cookiecutter) - Project templating tool
+---
