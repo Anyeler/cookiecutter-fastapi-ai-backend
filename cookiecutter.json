@@ -1,0 +1,14 @@
+{
+    "project_name": "AI Backend Starter",
+    "project_slug": "{{ cookiecutter.project_name.lower().replace(' ', '-').replace('_', '-') }}",
+    "package_name": "app",
+    "description": "FastAPI + LangChain + OpenAI (+ MCP placeholder) backend on Python 3.12",
+    "python_version": "3.12",
+    "openai_model": "gpt-4o-mini",
+    "author_name": "Your Name",
+    "license": ["MIT", "Apache-2.0", "Proprietary"],
+    "use_poetry": ["yes", "no"],
+    "use_docker": ["yes", "no"],
+    "enable_websocket": ["yes", "no"],
+    "enable_langgraph": ["yes", "no"]
+}

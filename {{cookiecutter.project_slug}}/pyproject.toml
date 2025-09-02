@@ -1,0 +1,78 @@
+{% if cookiecutter.use_poetry == "yes" -%}
+[tool.poetry]
+name = "{{ cookiecutter.project_slug }}"
+version = "0.1.0"
+description = "{{ cookiecutter.description }}"
+authors = ["{{ cookiecutter.author_name }}"]
+readme = "README.md"
+packages = [{include = "{{ cookiecutter.package_name }}"}]
+
+[tool.poetry.dependencies]
+python = "^{{ cookiecutter.python_version }}"
+fastapi = "^0.104.1"
+uvicorn = {extras = ["standard"], version = "^0.24.0"}
+pydantic = "^2.5.0"
+python-dotenv = "^1.0.0"
+sse-starlette = "^1.8.2"
+langchain = "^0.1.0"
+langchain-openai = "^0.0.5"
+openai = "^1.6.1"
+mcp = "^1.0.0"
+{% if cookiecutter.enable_langgraph == "yes" -%}
+langgraph = "^0.0.20"
+{% endif -%}
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.1.8"
+pytest = "^7.4.3"
+httpx = "^0.25.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+{% else -%}
+[project]
+name = "{{ cookiecutter.project_slug }}"
+version = "0.1.0"
+description = "{{ cookiecutter.description }}"
+authors = [{name = "{{ cookiecutter.author_name }}"}]
+readme = "README.md"
+requires-python = ">={{ cookiecutter.python_version }}"
+dependencies = [
+    "fastapi>=0.104.1",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.5.0",
+    "python-dotenv>=1.0.0",
+    "sse-starlette>=1.8.2",
+    "langchain>=0.1.0",
+    "langchain-openai>=0.0.5",
+    "openai>=1.6.1",
+    "mcp>=1.0.0",
+{% if cookiecutter.enable_langgraph == "yes" -%}
+    "langgraph>=0.0.20",
+{% endif -%}
+]
+
+[project.optional-dependencies]
+dev = [
+    "ruff>=0.1.8",
+    "pytest>=7.4.3",
+    "httpx>=0.25.2",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+{% endif -%}
+
+[tool.ruff]
+target-version = "py{{ cookiecutter.python_version.replace('.', '') }}"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "N", "UP", "S", "B", "A", "C4", "ICN", "PIE", "T20", "PT", "RET", "SIM", "ARG", "PL", "RUF"]
+ignore = ["S101", "PLR0913", "PLR0915"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
