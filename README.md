@@ -42,5 +42,3 @@ cookiecutter gh:Anyeler/cookiecutter-fastapi-ai-backend
 - 反向代理中会将 /api/ 前缀回写到应用根路径，因此后端路由仍保持 /v1/... 与 /ws/... 结构
 
 欢迎提交 Issue/PR，提出更多开关或语言本地化需求。
-
----
