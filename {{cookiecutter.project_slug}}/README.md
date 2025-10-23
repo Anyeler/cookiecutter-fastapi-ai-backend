@@ -2,6 +2,8 @@
 
 {{ cookiecutter.description }}
 
+> 📖 **详细使用指南**: 如果你是中文用户或需要更详细的开发指南（包括 macOS + VSCode + Docker 配置），请查看 [USAGE_GUIDE.md](./USAGE_GUIDE.md)
+
 ## Features
 
 - 🚀 **FastAPI** - Modern, fast web framework for building APIs
