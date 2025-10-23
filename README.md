@@ -7,33 +7,41 @@
 - Docker、docker-compose + Nginx 反向代理（SSE + WebSocket）
 - VS Code Devcontainer
 
-快速使用
+## 快速使用
+
 ```bash
 pipx install cookiecutter  # 或 pip install cookiecutter
 cookiecutter gh:Anyeler/cookiecutter-fastapi-ai-backend
 ```
 
-提供的开关
+生成项目后，请查看生成项目中的 `USAGE_GUIDE.md` 获取详细的使用指南，包括：
+- 如何生成和配置项目
+- 依赖安装与升级
+- VS Code 本地调试（断点调试）
+- Docker 安装、镜像打包与部署
+- macOS 开发环境配置
+
+## 提供的开关
 - use_poetry：是否使用 Poetry 管理依赖
 - use_docker：是否包含 Dockerfile
 - enable_websocket：是否生成 /ws/chat WebSocket 端点
 - enable_langgraph：是否生成 LangGraph 示例与 /v1/agent 端点
 
-生成项目的主要能力
+## 生成项目的主要能力
 - GET /healthz 健康检查
 - POST /v1/chat 使用 LangChain ChatOpenAI 完成对话
 - GET /v1/chat/stream 通过 OpenAI SDK 进行 SSE 流式输出
 - 可选：WS /ws/chat WebSocket 分片返回 tokens
 - 可选：POST /v1/agent 一个最小的 LangGraph 工作流
 
-关于自定义 OpenAI 兼容 Endpoint（国产/私有模型）
+## 关于自定义 OpenAI 兼容 Endpoint（国产/私有模型）
 - 在生成项目后，将 `.env.example` 复制为 `.env`
 - 配置以下变量：
   - OPENAI_API_KEY=你的密钥
   - OPENAI_BASE_URL=你的 OpenAI 兼容推理服务地址（默认 https://api.openai.com/v1）
 - 代码会自动读取以上环境变量，并在 LangChain 与 OpenAI SDK 中生效
 
-通过 Docker + Nginx 访问的路径前缀
+## 通过 Docker + Nginx 访问的路径前缀
 - Nginx 将对外暴露带有前缀的 API：/api/
   - 例如健康检查：GET http://127.0.0.1/api/healthz
   - 同步对话：POST http://127.0.0.1/api/v1/chat
